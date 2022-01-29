@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <title>image to text</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cute+Font&family=Dongle:wght@400&display=swap');
+        .cute-font{
+		    font-family: 'Cute Font', serif;
+	    }
+        .main-font{
+		    font-family: 'Dongle', serif;
+	    }
+    </style>
+</head>
+<body>
+    <script async src="https://docs.opencv.org/3.4/opencv.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">원근값의 도구</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Image to Text</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link disabled">더 많아지길 원하며..</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <h1 class="main-font text-center title" style="margin-top: 1;" id="title">이미지를 텍스트화</h1>
+    <h4 class="main-font text-center sub-title">'파일 선택'칸을 클릭하거나 이미지를 드레그하여 넣으세요.</h4>
+    <div class="input-file-container container main-font">
+        <input class="form-control form-control-lg " id="my-file" type="file" onchange="inputFile(this)" accept="image/*">
+    </div>
+
+    <canvas id="canvas"></canvas>
+    <img id="image" class="img-fluid" src="">
+    
+    <div class="show-text-container">
+        <div class="show-text-box">
+            <pre class="show-text-box-content" id="show-text">
+<span class="text-span" id="show-text-span">
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⢏⣟⠃⠃⣠⣰⣰⣠⣼⣯⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⢇⠐⡬⡎⠿⡿⣟⣿⣿⣷⠞⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣾⠀⣬⣿⣳⠰⠝⡁⣳⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠵⢀⣾⣽⣿⣷⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⢀⢊⣯⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠑⢌⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡠⠈⣏⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢑⣰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡕⠐⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡷⢈⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡻⣉⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣾⣿⣿⣯⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢁⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣳⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡷⡄⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡷⣦⣯⣿⣿⣿⣿⣟⣿⣿⣿⣿⣿⡿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠷⠎⠮⣿⣿⣿⣿⣿⡷⣇⣿⣿⣿⢋⣿⣿⡿⣮⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠳⠀⠌⢮⣿⣿⣿⡟⣏⣿⣿⣿⡿⠀⣿⣿⢳⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠏⣿⣿⣷⣿⣿⣿⣿⣿⣿⣿⡳⢌⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠏⠏⠏⠏⠏⠏⢏⣿⢑⣷⠐⠀⠀⢁⠱⠴⣮⣿⣿⣿⡷⢀⣿⣿⣽⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⠏⠏⠏⠀⠌⢇⣸⣿⣿⣿⣿⠁⠀⠀⠀⠀⢀⠰⣠⣸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠏⢏⣱⣀⠀⣠⣰⣰⣰⣰⣲⣰⣐⠜⠏⠏⠏⠏⠏⠏⣉⠳⠀⠀⠈⠁⠀⠃⠎⠏⠍⣯⡷⣈⣿⣿⣿⣟⣿⣿⣿⣿⣿⣿⣿⣿⣿⠓⠀⠀⠀⠀⠀⠀⠀⠌⣏⣿⣿⡷⠀⠀⠆⠀⠌⠀⡰⣎⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣰⠀⠀⠀⠀⠀⠀⠀⠀⣦⠰⠀⠀⠀⠀⠀⠀⣎⠼⠏⢈⣷⣜⣿⣿⣿⣿⣻⣿⠏⠏⠏⠏⠏⠏⠏⠀⠀⠀⠀⠏⠎⠀⠀⠏⠍⠏⠏⠏⠏⠏⠏⣿⣿⣯⠿⢏⣟⠿⠏⢯⣟⡿⠟⣯⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣷⣿⣿⣰⡰⠀⣰⣠⣰⣰⣾⣳⣰⣰⣰⠰⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠂⣀⣰⠰⠀⠀⠀⠀⠀⠀⣀⣰⣯⣿⡿⣿⣿⣿⣿⣿⣳⣰⡸⣷⣰⡰⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠀⣀⠐⠀⠀⠀⠀⣮⣷⠀⣠⣸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣱⣰⣸⠷⣿⣿⠏⢃⣹⣿⣿⠷⠀⠀⠀⠀⠀⠀⣠⡾⣯⣿⡰⡉⣟⣯⣟⣿⣿⣿⣿⣽⣿⠀⠀⠀⠀⠀⠀⠀⠌⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⠿⠏⠉⣱⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣱⣿⣿⣿⣿⣿⣿⡟⢏⣿⣿⣄⣯⣟⣾⠏⠀⠀⠀⠀⠀⠀⠀⣀⣼⢟⣟⣿⡱⢌⡳⠀⠀⠀⠌⣏⣿⣿⣿⣳⠰⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠰⠐⠀⠀⣴⣰⣰⣲⣱⣼⣾⣿⣿⣻⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣾⣿⢏⣿⣻⣱⣰⠘⣯⣿⡿⠀⠀⠀⠀⠀⠏⠇⠀⠀⠀⠀⠀⠀⠀⠀⢀⠐⠀⢀⣾⣿⣿⠃⣳⣒⢀⣾⠑⠀⠌⣏⣿⣿⣿⠃⠀⠐⠀⠀⠀⠀⠐⠀⠀⠀⠀⣠⣰⡰⢀⠀⢠⠰⠟⣣⣾⣳⣼⣿⣿⣻⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣱⣰⣰⠰⣰⠄⠈⠏⠉⣣⣰⠀⠏⠃⠎⠳⠀⠀⠀⢀⣰⣰⣰⣰⣰⣰⣰⢾⣿⣛⣯⣿⡷⣠⣿⣽⣿⣳⣰⣵⡰⣀⣾⣿⡑⠀⣠⠐⠀⠀⣀⡰⠀⠀⠌⠏⣩⣷⣐⡱⢀⠰⢏⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣯⣿⣿⣿⣿⣿⢷⢠⣰⣼⠟⠀⠀⠀⣀⠀⣄⡰⠀⠀⠆⠀⣰⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣿⣟⣿⢛⣿⣿⣮⣿⣿⣿⣿⣯⣿⠿⠏⠏⠄⠀⢏⠁⠀⠏⠏⠇⠓⣬⣿⠗⣠⣷⣿⣿⣿⣿⣿⣿⣱⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣽⣿⣿⣹⣿⣿⠑⠀⠌⣰⢸⢁⣰⢿⢎⠗⣠⢀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣰⠰⣾⣿⣿⣿⡹⠃⠎⠏⠀⠀⠀⠀⠀⠀⠈⠋⠏⠏⠏⠁⠎⣯⣿⠏⠏⠏⠏⢏⠿⠏⠿⠏⠏⣏⠟⣇⣿⣿⣯⣷⣿⡿⣯
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣰⣸⠾⢏⠀⠐⣎⠰⠏⠀⠌⣯⣿⣿⣯⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣻⣿⣿⣿⣿⣿⣿⢃⠀⠀⢀⠈⣀⡰⢀⣰⠰⠀⠀⠌⢈⢳⡰⠀⠄⠀⠀⠰⢀⣰⢀⠀⠀⣯⣷⣼⣿⣿⣾⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡰⠏⣏⣿⣿⣿⡿⠁⣠⣿⠃⣿⡱⣠⠀⣈⣱⣰⣰⣰⣿⣿⣯⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡱⠀⠀⠀⠈⠇⠀⠀⠀⣀⢰⠀⠐⠀⠀⠄⠀⠀⠀⠀⣠⣞⠌⠀⢐⠀⣸⣿⣳⣰⣾⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣻⣿⣿⣰⣻⣷⣼⣿⣽⠸⣿⡿⣻⣿⣻⠐⠀⠀⣰⣿⡷⠀⠀⠌⣯⣟⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠇⠀⠃⡠⠀⠀⠀⠀⠀⠌⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠀⠀⢀⣰⣰⢱⣳⣾⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣟⣳⠸⡿⣧⣼⣿⣿⣿⣿⡿⠇⠌⠃⠀⠀⠀⠀⠁⢯⠏⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠳⠀⣀⣈⠑⠃⠎⠃⠀⡐⠀⠀⠌⠏⠏⠀⠀⢊⣛⣿⡿⣃⣟⣱⠾⣧⣓⣰⢞⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⠇⠎⣿⡿⣿⣿⣸⣏⡳⣢⠀⠀⠀⠀⠀⠀⠀⠌⠏⢏⣿⣿⠿⢯⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣰⣰⣰⠖⠀⠀⠀⣨⣿⣷⣠⣿⢈⣼⣿⣵⣸⠏⣧⠆⠁⣇⣐⣾⠟⢏⣻⠳⣸⣻⣿⣳⣿⣿⣿⣿⣿⣿⣿⣿⣿⢿
+</span>
+            </pre>
+        </div>
+    
+    <script>
+        function get_braile_code(code) {
+            decimal_code = parseInt(code, 2);
+            return String.fromCharCode(decimal_code+10240);
+        }
+
+        function get_text() {
+            
+        }
+
+        function inputFile(input) {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+
+            var z = 0.05;
+            var imageType = /image.*/;
+            const img = new Image();
+            img.onload = e => {
+                alert(`${e.target.width} x ${e.target.height}`);
+                var x = parseInt(e.target.width * z * 0.25) * 8;
+                var y = parseInt(e.target.height * z * 0.07) * 8;
+                let src = cv.imread(img, cv.CV_8UC4);
+                let imgResize = new cv.Mat();
+                cv.resize(src, imgResize, new cv.Size(x, y), 0, 0, cv.INTER_AREA);
+                let cvImg = new cv.Mat(x, y, cv.CV_8UC4);
+                cv.cvtColor(imgResize, cvImg, cv.COLOR_RGBA2GRAY);
+                cv.imshow('canvas', cvImg);
+
+                //img = cvImg;
+
+                var text = "";
+                var listForText = [[1,3],[1,2],[1,1],[1,0],[0,3],[0,2],[0,1],[0,0]];
+
+                //var pixel = cvImg.data;
+                //document.getElementById("show-text-span").innerHTML = x+" "+y;
+                for (let j = 0; j < y; j+=2) {// y; j+=4) {
+                    for (let i = 0; i < x; i+=4) {//x; j+=2) {
+                        var braileBinaryCode = "";
+                        for (let k = 0; k < listForText.length; k++) {
+                            let canvasX = listForText[k][0] * i;
+                            let canvasY = listForText[k][1] * j;
+                            //const pixel = ctx.getImageData(canvasX, canvasY, 1, 1).data;
+                            //var pixel = cvImg.cvtColor(canvasX, canvasY);
+                            //var pixel = cvImg.at<cv.uchar>(canvasX, canvasY);
+                            var pixelValue = cvImg.ucharPtr(j + listForText[k][0], i + listForText[k][1]);
+                            //text += pixelValue+" ";//pixel[//[y*x+canvasX]+" ";
+                            //text += "1";
+                            //var pixelValue = pixel[y*x+canvasX]+"";
+                            if (255-pixelValue > 145) {
+                                braileBinaryCode += "1";
+                            } else {
+                                braileBinaryCode += "0";
+                            }
+                        }
+                        text += get_braile_code(braileBinaryCode);
+                    }
+                    text += "\n"
+                }
+                cv.imshow('canvas', cvImg);
+                document.getElementById("show-text-span").innerHTML = text;
+            }
+            const reader = new FileReader()
+            reader.onload = e => {
+                if (true) {
+                    const previewImage = document.getElementById("image");
+                    img.src = e.target.result;
+                    img.style.filter = `grayscale(0%)`;
+                    //previewImage.src = img.src;
+                }else {
+                    alert("이미지 파일이 아닙니다.");
+                }
+            }
+            reader.readAsDataURL(input.files[0])
+        }
+    </script>
+</body>
+</html>
