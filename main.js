@@ -2,6 +2,7 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const showText = document.getElementById('show-text');
 
+myFunction(window.matchMedia("(max-width: 700px)"));
 var imgWidth = 1;
 var imgHeight = 1;
 fixedRatioChange();
@@ -18,10 +19,11 @@ var resoponsiveness = 60;
 var brightness = 0;
 var saveBrightness = 0;
 var textSize = 0.6;
+var reversal = false;
 var listForText = [[1,3],[1,2],[1,1],[1,0],[0,3],[0,2],[0,1],[0,0]];
 
 function get_braile_code(code) {
-    if (code == "00000000") {
+    if (code == "00000000" && document.getElementById("type-of-os-1").checked) {
         //return "   ";
         //return "   ";
         //return "  ";
@@ -45,10 +47,18 @@ function get_text() {
             var braileBinaryCode = "";
             for (let k = 0; k < listForText.length; k++) {
                 var pixelValue = cvImg.ucharPtr(j + listForText[k][0], i + listForText[k][1]);
-                if (255-pixelValue > resoponsiveness) {
-                    braileBinaryCode += "1";
+                if (reversal) {
+                    if (255-pixelValue < resoponsiveness) {
+                        braileBinaryCode += "1";
+                    } else {
+                        braileBinaryCode += "0";
+                    }
                 } else {
-                    braileBinaryCode += "0";
+                    if (255-pixelValue > resoponsiveness) {
+                        braileBinaryCode += "1";
+                    } else {
+                        braileBinaryCode += "0";
+                    }
                 }
             }
             text += get_braile_code(braileBinaryCode);
@@ -66,6 +76,7 @@ function inputFile(input) {
         
         imgWidth = e.target.width;
         imgHeight = e.target.height;
+        fixedRatioChange();
         if (document.getElementById("type-of-size-1").checked) {
             z = document.getElementById("text-of-size-1").value;
             x = parseInt(e.target.width * z * 0.25) * 8;
@@ -172,5 +183,21 @@ function fixedRatioChange() {
         hRatio = parseInt(imgHeight * 0.065 *2 / (imgWidth * 0.25) * parseInt(document.getElementById("text-of-size-2-w-bubble").value));
         document.getElementById("text-of-size-2-h").value = hRatio;
         document.getElementById("text-of-size-2-h-bubble").value = hRatio;
+    }
+}
+
+function myFunction(x) {
+    if (x.matches) { //폰이면
+        document.getElementById("type-of-os-2").checked = true;
+    } else {
+        document.getElementById("type-of-os-1").checked = true;
+    }
+}
+
+function reversalFunction() {
+    if (reversal == true) {
+        reversal = false;
+    } else {
+        reversal = true;
     }
 }
